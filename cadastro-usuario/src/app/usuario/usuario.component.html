@@ -1,0 +1,108 @@
+
+                <mat-toolbar color="primary">
+                  <span class="fill-remaining-space">{{pageTitle}}</span>
+                </mat-toolbar>
+                
+                <mat-form-field class="example-full-width">
+                  <mat-label>Id</mat-label>
+                  <input matInput formControlName="Id" [disabled]="true" value=0>
+                </mat-form-field>
+
+                <div class="container" novalidate> 
+                  <form [formGroup]="usuarioForm" (ngSubmit)="onFormSubmit(usuarioForm.value)" class="form">
+                
+                    <mat-form-field class="form-element">
+                      <input matInput placeholder="Nome do usuario" formControlName="Nome" maxlength="200" minlength="3">
+                      <mat-error *ngIf="!usuarioForm.controls['Nome'].valid && usuarioForm.controls['Nome'].touched">
+                        {{ titleAlert }}
+                      </mat-error>
+                    </mat-form-field>
+                
+                    <mat-form-field class="form-element">
+                      <input matInput placeholder="E-mail" formControlName="Email" >
+                      <mat-error *ngIf="!usuarioForm.controls['Email'].valid && usuarioForm.controls['Email'].touched">
+                        {{ getErrorEmail() }}
+                      </mat-error>
+                    </mat-form-field>
+                
+                    <mat-form-field appearance="fill">
+                      <mat-label>Sexo</mat-label>
+                      <mat-select (selectionChange)="changeSexo($event)" formControlName="Sexo">
+                        <mat-option *ngFor="let sexo of allSexo" [value]="sexo.sexoId">
+                          {{sexo.descricao}}
+                        </mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                    
+                    <mat-form-field appearance="fill">
+                      <mat-label>Data de nascimento</mat-label>
+                      <input matInput [matDatepicker]="picker" formControlName="DataNascimento">
+                      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                      <mat-datepicker #picker></mat-datepicker>
+                    </mat-form-field>
+
+                    <mat-form-field class="form-element">
+                      <input matInput placeholder="Senha" formControlName="Senha" >
+                      <mat-hint>Escolha uma senha com no minimo 8 caracteres, uma letra maiuscula e um numero</mat-hint>
+                      <mat-error *ngIf="!usuarioForm.controls['Senha'].valid && usuarioForm.controls['Senha'].touched">
+                        {{ getErrorPassword() }}
+                      </mat-error>
+                    </mat-form-field>
+
+                    <!-- <mat-form-field appearance="fill">
+                      <input matInput [type]="hide ? 'password' : 'text'" placeholder="Senha" formControlName="Senha">
+                      <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hide">
+                        <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+                      </button>
+                      <mat-error *ngIf="!usuarioForm.controls['Senha'].valid && usuarioForm.controls['Senha'].touched">
+                        {{ getErrorPassword() }}
+                      </mat-error>
+                    </mat-form-field> -->
+                    
+                    <mat-label>Status: </mat-label>
+                    <div class="form-element">
+                      <mat-label>Inataivo</mat-label>
+                        <mat-slide-toggle formControlName="Ativo"  color="primary" aria-checked="true"></mat-slide-toggle>
+                      <mat-label>Ativo</mat-label>
+                    </div>
+                
+                    <div class="form-element">
+                      <button mat-raised-button color="primary" type="submit" class="button">Enviar</button>
+                    </div>
+                
+                  </form>
+                </div>
+
+
+           <br><br> 
+           <mat-toolbar color="primary">
+            <span class="fill-remaining-space">Lista de usuarios cadastrados</span>
+          </mat-toolbar>
+          <table class="table" > 
+              <tr ngclass="btn-primary"> 
+                <th class="tbl2">ID</th> 
+                <th class="tbl2">Nome</th> 
+                <th class="tbl2">Email</th> 
+                <th class="tbl2">Sexo</th> 
+                <th class="tbl2">Data de Nascimento</th> 
+                <th class="tbl2">Status</th> 
+                <th class="tbl2">Edita</th> 
+                <th class="tbl2">Deleta</th> 
+              </tr> 
+              <tr *ngFor="let usuario of allUsuarios | async">
+                <td class="tbl2">{{usuario.usuarioId}}</td> 
+                <td class="tbl2">{{usuario.nome}}</td> 
+                <td class="tbl2">{{usuario.email}}</td> 
+                <td class="tbl2">{{checkSexo(usuario.sexo)}}</td> 
+                <td class="tbl2">{{usuario.dataNascimento | date:'dd-MM-yyyy'}}</td> 
+                <td class="tbl2">{{checkStatus(usuario.ativo)}}</td> 
+                <td class="tbl2"> 
+                  <button type="button" class="btn btn-info"matTooltip="Clique no botão para Editar"(click)="loadUsuarioToEdit(usuario.usuarioId)">Editar</button> 
+                </td> 
+                <td class="tbl2"> 
+                  <button type="button" class="btn btn-danger"matTooltip="Clique no botão para Deletar"(click)="deleteUsuario(usuario.usuarioId)">Deletar</button> 
+                </td> 
+              </tr>    
+            </table> 
+
+       
