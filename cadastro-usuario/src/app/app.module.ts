@@ -25,6 +25,8 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatTableModule } from '@angular/material/table'
+
 
 
 
@@ -59,6 +61,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     MatSelectModule,
     MatSlideToggleModule,
     MatSnackBarModule,
+    MatTableModule,
   ],
   providers: [HttpClientModule, UsuarioService, MatDatepickerModule],
   bootstrap: [AppComponent]

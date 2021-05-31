@@ -3,23 +3,20 @@
                   <span class="fill-remaining-space">{{pageTitle}}</span>
                 </mat-toolbar>
                 
-                <mat-form-field class="example-full-width">
-                  <mat-label>Id</mat-label>
-                  <input matInput formControlName="Id" [disabled]="true" value=0>
-                </mat-form-field>
+                
 
                 <div class="container" novalidate> 
                   <form [formGroup]="usuarioForm" (ngSubmit)="onFormSubmit(usuarioForm.value)" class="form">
                 
                     <mat-form-field class="form-element">
-                      <input matInput placeholder="Nome do usuario" formControlName="Nome" maxlength="200" minlength="3">
+                      <input matInput placeholder="Nome do usuario" formControlName="Nome" maxlength="200" minlength="3" required>
                       <mat-error *ngIf="!usuarioForm.controls['Nome'].valid && usuarioForm.controls['Nome'].touched">
-                        {{ titleAlert }}
+                        Campo obrigatório, deve conter no mínimo 3 caracteres.
                       </mat-error>
                     </mat-form-field>
                 
                     <mat-form-field class="form-element">
-                      <input matInput placeholder="E-mail" formControlName="Email" >
+                      <input matInput placeholder="E-mail" formControlName="Email" required >
                       <mat-error *ngIf="!usuarioForm.controls['Email'].valid && usuarioForm.controls['Email'].touched">
                         {{ getErrorEmail() }}
                       </mat-error>
@@ -32,39 +29,39 @@
                           {{sexo.descricao}}
                         </mat-option>
                       </mat-select>
+                      <mat-error *ngIf="!usuarioForm.controls['Sexo'].valid && usuarioForm.controls['Sexo'].touched">
+                        Campo obrigatório.
+                      </mat-error>
                     </mat-form-field>
                     
                     <mat-form-field appearance="fill">
                       <mat-label>Data de nascimento</mat-label>
                       <input matInput [matDatepicker]="picker" formControlName="DataNascimento">
+                      <mat-error *ngIf="!usuarioForm.controls['DataNascimento'].valid && usuarioForm.controls['DataNascimento'].touched">
+                        Campo obrigatório.
+                      </mat-error>
                       <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
                       <mat-datepicker #picker></mat-datepicker>
                     </mat-form-field>
 
-                    <mat-form-field class="form-element">
-                      <input matInput placeholder="Senha" formControlName="Senha" >
-                      <mat-hint>Escolha uma senha com no minimo 8 caracteres, uma letra maiuscula e um numero</mat-hint>
-                      <mat-error *ngIf="!usuarioForm.controls['Senha'].valid && usuarioForm.controls['Senha'].touched">
-                        {{ getErrorPassword() }}
-                      </mat-error>
-                    </mat-form-field>
-
-                    <!-- <mat-form-field appearance="fill">
-                      <input matInput [type]="hide ? 'password' : 'text'" placeholder="Senha" formControlName="Senha">
-                      <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hide">
-                        <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
-                      </button>
-                      <mat-error *ngIf="!usuarioForm.controls['Senha'].valid && usuarioForm.controls['Senha'].touched">
-                        {{ getErrorPassword() }}
-                      </mat-error>
-                    </mat-form-field> -->
                     
+                    <mat-form-field>
+                      <input matInput placeholder="Senha" [type]="hide ? 'password' : 'text'" formControlName="Senha" required>
+                      <mat-icon matSuffix (click)="hide = !hide">{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+                      <mat-hint *ngIf="!passwordInput.value">Escolha uma senha com no minimo 8 caracteres, uma letra maiuscula e um numero</mat-hint>
+                      <mat-error *ngIf="!usuarioForm.controls['Senha'].valid && usuarioForm.controls['Senha'].touched">
+                        {{ getErrorPassword() }}
+                      </mat-error>
+                  </mat-form-field>
+                    
+                  <div style="margin-top: 10%;">
                     <mat-label>Status: </mat-label>
                     <div class="form-element">
-                      <mat-label>Inataivo</mat-label>
-                        <mat-slide-toggle formControlName="Ativo"  color="primary" aria-checked="true"></mat-slide-toggle>
+                      <mat-label >Inataivo</mat-label>
+                        <mat-slide-toggle formControlName="Ativo"  color="primary" aria-checked="true" style="margin-left: 1%; margin-right: 1%;"></mat-slide-toggle>
                       <mat-label>Ativo</mat-label>
                     </div>
+                  </div>
                 
                     <div class="form-element">
                       <button mat-raised-button color="primary" type="submit" class="button">Enviar</button>
@@ -75,34 +72,69 @@
 
 
            <br><br> 
-           <mat-toolbar color="primary">
+
+          <mat-toolbar color="primary">
             <span class="fill-remaining-space">Lista de usuarios cadastrados</span>
           </mat-toolbar>
-          <table class="table" > 
-              <tr ngclass="btn-primary"> 
-                <th class="tbl2">ID</th> 
-                <th class="tbl2">Nome</th> 
-                <th class="tbl2">Email</th> 
-                <th class="tbl2">Sexo</th> 
-                <th class="tbl2">Data de Nascimento</th> 
-                <th class="tbl2">Status</th> 
-                <th class="tbl2">Edita</th> 
-                <th class="tbl2">Deleta</th> 
-              </tr> 
-              <tr *ngFor="let usuario of allUsuarios | async">
-                <td class="tbl2">{{usuario.usuarioId}}</td> 
-                <td class="tbl2">{{usuario.nome}}</td> 
-                <td class="tbl2">{{usuario.email}}</td> 
-                <td class="tbl2">{{checkSexo(usuario.sexo)}}</td> 
-                <td class="tbl2">{{usuario.dataNascimento | date:'dd-MM-yyyy'}}</td> 
-                <td class="tbl2">{{checkStatus(usuario.ativo)}}</td> 
-                <td class="tbl2"> 
-                  <button type="button" class="btn btn-info"matTooltip="Clique no botão para Editar"(click)="loadUsuarioToEdit(usuario.usuarioId)">Editar</button> 
-                </td> 
-                <td class="tbl2"> 
-                  <button type="button" class="btn btn-danger"matTooltip="Clique no botão para Deletar"(click)="deleteUsuario(usuario.usuarioId)">Deletar</button> 
-                </td> 
-              </tr>    
-            </table> 
+           <br><br>
+
+           <mat-form-field>
+            <mat-label>Filtro</mat-label>
+            <input matInput (keyup)="applyFilter($event)" placeholder="Ex. Joao" #input>
+          </mat-form-field>
+
+          <div>
+            <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+              
+              <ng-container matColumnDef="usuarioId">
+                <th mat-header-cell *matHeaderCellDef> ID </th>
+                <td mat-cell *matCellDef="let element"> {{element.usuarioId}} </td>
+              </ng-container>
+            
+              <ng-container matColumnDef="nome">
+                <th mat-header-cell *matHeaderCellDef> Nome </th>
+                <td mat-cell *matCellDef="let element"> {{element.nome}} </td>
+              </ng-container>
+            
+              <ng-container matColumnDef="email">
+                <th mat-header-cell *matHeaderCellDef> Email </th>
+                <td mat-cell *matCellDef="let element"> {{element.email}} </td>
+              </ng-container>
+            
+              <ng-container matColumnDef="sexo">
+                <th mat-header-cell *matHeaderCellDef> Sexo </th>
+                <td mat-cell *matCellDef="let element"> {{checkSexo(element.sexo)}} </td>
+              </ng-container>
+
+              <ng-container matColumnDef="dataNascimento">
+                <th mat-header-cell *matHeaderCellDef> Data de Nasimento </th>
+                <td mat-cell *matCellDef="let element"> {{formatDate(element.dataNascimento)}} </td>
+              </ng-container>
+
+              <ng-container matColumnDef="ativo">
+                <th mat-header-cell *matHeaderCellDef> Status </th>
+                <td mat-cell *matCellDef="let element"> {{checkStatus(element.ativo)}} </td>
+              </ng-container>
+
+              <ng-container matColumnDef="edit">
+                <th mat-header-cell *matHeaderCellDef> Editar </th>
+                <td mat-cell *matCellDef="let element"> 
+                  <button mat-raised-button color="primary" type="button" matTooltip="Clique no botão para Editar"(click)="loadUsuarioToEdit(element.usuarioId)">Editar</button> 
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="delete">
+                <th mat-header-cell *matHeaderCellDef> Deletar </th>
+                <td mat-cell *matCellDef="let element"> 
+                  <button mat-raised-button color="warn" type="button" matTooltip="Clique no botão para Deletar"(click)="deleteUsuario(element.usuarioId)">Deletar</button> 
+                </td>
+              </ng-container>
+            
+              <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+              <!-- <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator> -->
+            </table>
+          </div>
 
        

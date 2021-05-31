@@ -1,23 +1,16 @@
-
-th,td{
-    text-align: center;
+table {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  min-width: 500px;
 }
-th{
-    background-color:#422956;
-    color: white;
-}
-.tbl1
-{
-    width: 400px;
-}
-.tbl2
-{
-    width: 400pxx;
+th.mat-header-cell {
+  text-align: left;
+  max-width: 300px;
 }
 
 .fill-remaining-space {
-    /* This fills the remaining space, by using flexbox. 
-       Every toolbar row uses a flexbox row layout. */
+    
     flex: 1 1 auto;
   }
   

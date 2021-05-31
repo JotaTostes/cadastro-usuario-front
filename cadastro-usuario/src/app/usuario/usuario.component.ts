@@ -1,10 +1,14 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';  
 import { Observable } from 'rxjs'; 
 import { UsuarioService } from '../usuario.service';  
 import { Usuario } from '../usuario'; 
 import { Sexo } from '../Sexo/sexo'; 
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatTableDataSource } from '@angular/material/table';
+import {MatSort} from '@angular/material/sort';
+// import {MatPaginator} from '@angular/material/paginator';
+
 // import { create } from 'domain';
 
 @Component({
@@ -25,7 +29,11 @@ export class UsuarioComponent implements OnInit {
   post: any = '';
   selectedSexo: number;
   pageTitle: string = 'Cadastrar Usuario';
-  // hide: boolean = true;
+  dataSource: any = new MatTableDataSource<Usuario>();
+  displayedColumns: any = ['usuarioId', 'nome', 'email', 'sexo', 'dataNascimento', 'ativo', 'edit', 'delete']
+  @ViewChild(MatSort) sort: MatSort;
+  hide: boolean = true;
+  get passwordInput() { return this.usuarioForm.get('Senha'); } 
 
   constructor(private formbulider: FormBuilder, private usuarioService:UsuarioService, private _snackBar:MatSnackBar) { }
 
@@ -33,22 +41,26 @@ export class UsuarioComponent implements OnInit {
     this.loadAllSexos();
     this.createForm();
     this.loadAllUsuarios();
+    this.allUsuarios.subscribe(data => {
+      this.dataSource = new MatTableDataSource(data);
+    });
   }
 
   createForm() {
     let emailregex: RegExp = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
     this.usuarioForm = this.formbulider.group({
       'Id': [null,null],
-      'Sexo': '',
+      'Sexo': [null,[Validators.required]],
       'Email': [null, [Validators.required, Validators.pattern(emailregex)]],
-      'Nome': [null, Validators.required],
-      'Senha': [null, [Validators.required, this.checkPassword]],
+      'Nome': [null, [Validators.required, Validators.minLength(3)]],
+      'Senha': [null, [Validators.required, this.checkPassword, Validators.minLength(8)]],
       'DataNascimento': [null, [Validators.required]],
       'Ativo': true,
       'validate': ''
     });
   }
 
+  
 
   checkPassword(control : any) {
     let enteredPassword = control.value
@@ -57,8 +69,8 @@ export class UsuarioComponent implements OnInit {
   }
 
   getErrorPassword() {
-    return this.usuarioForm.get('Password').hasError('required') ? 'Campo obrigatório (no minimo 8 caracteres, 1 letra maiuscula e 1 numero)' :
-      this.usuarioForm.get('Password').hasError('requirements') ? 'Senha deve conter no minimo 8 caracteres, 1 letra maiuscula e 1 numero' : '';
+    return this.usuarioForm.get('Senha').hasError('required') ? 'Campo obrigatório (no minimo 8 caracteres, 1 letra maiuscula e 1 numero)' :
+      this.usuarioForm.get('Senha').hasError('requirements') ? 'Senha deve conter no minimo 8 caracteres, 1 letra maiuscula e 1 numero' : '';
   }
 
   getErrorEmail() {
@@ -68,6 +80,8 @@ export class UsuarioComponent implements OnInit {
 
   loadAllUsuarios() {  
     this.allUsuarios = this.usuarioService.getAllUsuarios();  
+    this.dataSource = this.usuarioService.getAllUsuarios();
+    console.log("datasource table", this.dataSource);
   }
 
   loadAllSexos(){
@@ -86,11 +100,17 @@ checkStatus(status: boolean){
   return statusDescription;
   }
 
+  formatDate(dateIso : any){
+    var date = new Date(dateIso);
+    var curr_date = date.getDate();
+    var curr_month = date.getMonth() + 1;
+    var curr_year = date.getFullYear();
+    return curr_date + "/" + curr_month + "/" + curr_year;
+  }
+
   changeSexo(data : any){
     console.log("data sexo", data);
     this.selectedSexo = data.value;
-
-    console.log("selectredSexo", this.selectedSexo);
   }
 
   onFormSubmit(post : any) {  
@@ -158,5 +178,15 @@ checkStatus(status: boolean){
     this.pageTitle = "Cadastrar Usuario";  
     this.dataSaved = false;  
   } 
+
+  // ngAfterViewInit() {
+  //   this.dataSource.paginator = this.paginator;
+  //   this.dataSource.sort = this.sort;
+  // }
+
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+  }
 
 }
